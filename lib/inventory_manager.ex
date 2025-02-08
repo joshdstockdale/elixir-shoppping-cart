@@ -3,10 +3,20 @@ defmodule InventoryManager do
     Enum.find(inventory, fn product -> product.name == name end)
   end
 
-  def update_inventory(inventory, name, amount) do
+  def remove_inventory(inventory, name, amount) do
     Enum.map(inventory, fn product ->
       if product.name == name do
         %{product | quantity: product.quantity - amount}
+      else
+        product
+      end
+    end)
+  end
+
+  def add_inventory(inventory, name, amount) do
+    Enum.map(inventory, fn product ->
+      if product.name == name do
+        %{product | quantity: product.quantity + amount}
       else
         product
       end

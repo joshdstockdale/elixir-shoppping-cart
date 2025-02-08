@@ -11,7 +11,7 @@ defmodule ShoppingCart do
 
       product when product.quantity >= amount ->
         new_cart = [{product.name, amount} | cart]
-        new_inventory = InventoryManager.update_inventory(inventory, product.name, amount)
+        new_inventory = InventoryManager.remove_inventory(inventory, product.name, amount)
         {:ok, new_cart, new_inventory}
 
       _ ->
@@ -19,8 +19,18 @@ defmodule ShoppingCart do
     end
   end
 
-  def remove_item(cart, item = %{name: _, price: _}) do
-    List.delete(cart, item)
+  def remove_item(cart, product_name, amount, inventory) do
+    case InventoryManager.get_product(inventory, product_name) do
+      nil -> {:error, :product_not_found}
+
+      product when cart.quantity >= amount ->
+        new_cart = [{product.name, cart.quantity - amount}]
+        new_inventory = InventoryManager.add_inventory(intentory, product.name, amount)
+        {:ok, new_cart, new_inventory}
+
+        _ ->
+          {:error, :insufficient_cart}
+    end
   end
 
   def remove_first([_head | tail]) do
